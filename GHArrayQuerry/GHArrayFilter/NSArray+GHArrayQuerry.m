@@ -46,13 +46,12 @@ static char * const gh_conditionKey = "gh_conditionKey";
 {
     return ^(char* keypath){
         NSMutableString *conditionStrg = [self conditionString];
-        if(keypath)
-        {
-            [conditionStrg appendFormat:@"SELF.%s ",keypath];
+        if (strcmp(keypath, "((void *)0)") == 0) {
+            [conditionStrg appendString:@"SELF "];
         }
         else
         {
-            [conditionStrg appendString:@"SELF "];
+             [conditionStrg appendFormat:@"SELF.%s ",keypath];
         }
         return self;
     };
@@ -81,7 +80,7 @@ IMP_SINGLE_OBJ_GET_OPERATION(moreEqualThan, @">=");
 IMP_SINGLE_OBJ_GET_OPERATION(beginswith, @"BEGINSWITH");
 IMP_SINGLE_OBJ_GET_OPERATION(endswith, @"ENDSWITH");
 IMP_SINGLE_OBJ_GET_OPERATION(contains, @"CONTAINS");
-IMP_SINGLE_OBJ_GET_OPERATION(like, @"LIKES");
+IMP_SINGLE_OBJ_GET_OPERATION(like, @"LIKE");
 IMP_SINGLE_OBJ_GET_OPERATION(match, @"MATCHES");
 IMP_SINGLE_OBJ_GET_OPERATION(In, @"IN");
 IMP_VOID_OBJ_GET(query, (^{

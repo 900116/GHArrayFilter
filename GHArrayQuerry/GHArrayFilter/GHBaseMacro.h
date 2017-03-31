@@ -7,8 +7,8 @@
 //
 
 #import <Foundation/Foundation.h>
-#import "RACmetamacros.h"
 #import <UIKit/UIKit.h>
+#import <regex.h>
 
 #define MASEdgeInsets UIEdgeInsets
 
@@ -16,7 +16,12 @@ static inline id _MASBoxValue(const char *type, ...) {
     va_list v;
     va_start(v, type);
     id obj = nil;
-    if (strcmp(type, "[7c]") == 0) {
+    regex_t reg;
+    char *pattern = "[\\d+c]|r[*]|[*]";
+    regcomp(&reg,pattern,REG_EXTENDED);
+    regmatch_t pmatch[20];
+    int result = regexec(&reg, type, 20, pmatch, 0);
+    if (result!=REG_NOMATCH) {
         char* actual = va_arg(v, char*);
         obj = [[NSString alloc]initWithCString:actual encoding:NSUTF8StringEncoding];
     }
@@ -78,12 +83,3 @@ static inline id _MASBoxValue(const char *type, ...) {
 
 
 #define MASBoxValue(value) _MASBoxValue(@encode(__typeof__((value))), (value))
-
-#define keypath1(PATH) \
-(((void)(NO && ((void)PATH, NO)), strchr(# PATH, '.') + 1))
-
-#define keypath2(OBJ, PATH) \
-(((void)(NO && ((void)OBJ.PATH, NO)), # PATH))
-
-#define keypath(...) \
-metamacro_if_eq(1, metamacro_argcount(__VA_ARGS__))(keypath1(__VA_ARGS__))(keypath2(__VA_ARGS__))
